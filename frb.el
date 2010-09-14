@@ -33,7 +33,7 @@
 
 (defgroup frb nil "client for the faraday's book")
 
-(defvar *frb-version* "1.0")
+(defvar url-http-end-of-headers)
 
 (defcustom frb-server "http://faradaysbook.com"
   "Base URL for the frb-server"
@@ -64,7 +64,7 @@
                              username
                              (md5 password)) query-string))
          (url-request-data qs))
-    (url-retrieve uri 'switch-to-url-buffer)))
+    (url-retrieve uri 'kill-url-buffer)))
 
 (defun frb-get (path &optional query-string)
   (let* ((username (or frb-username (read-from-minibuffer "userid: ")))
@@ -112,24 +112,26 @@
   (interactive)
   (frb-get "notes"))
 
-(defun read-json-buffer ()
-  "Parse the JSON in FILENAME and return the result."
-  (save-excursion
-    (let* ((origbuffer (current-buffer)))
-      (let ((text (buffer-string)))
-	(switch-to-buffer origbuffer)
-        (json-read-from-string text)))))
-
 (defun frb-open-get (path &optional query-string)
   (let* ((uri (format "%s/api/1.0/%s" frb-server path))
          (url-request-method "GET")
-         (url-request-extra-headers nil)
          (qs (if query-string
                  (concat uri (format "?%s" query-string))
                uri)))
-    (url-retrieve qs 'switch-to-url-buffer)
-    ;    (setq frb-buffer (url-retrieve-synchronously qs))
-    ))
+    (setq url-mime-encoding-string "identity")
+    (setq frb-buffer (url-retrieve-synchronously qs))
+    (with-current-buffer frb-buffer
+      (progn
+        (set-visited-file-name (format "frb #%s" (random)))
+        (delete-region (point-min) (point))
+        (set-buffer-modified-p nil)
+        (switch-to-buffer frb-buffer)
+        (goto-line 10)
+        
+        (let ((j (json-read-from-string (buffer-substring-no-properties (point)
+                                                                        (point-max)))))
+          (delete-region (point-min) (point-max))
+          (insert (format "%s\n" j)))))))
 
 ;;; The openbook viewer: show(s)
 (defun frb-open-tags ()
