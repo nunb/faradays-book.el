@@ -1,10 +1,10 @@
 
-Client to the wonderful note-tagging system : http://faradaysbook.com/
+Emacs client for the wonderful note-tagging system : http://faradaysbook.com/
 
 ## INSTALL
     (require 'frb)
-    (setq frb-username user)
-    (setq frb-password user)
+    (setq frb-username <your-email-address>)
+    (setq frb-password <your-password>)
 
 ## COMMANDS
 
