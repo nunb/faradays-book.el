@@ -11,7 +11,7 @@ Emacs client for the wonderful note-tagging system : http://faradaysbook.com/
 ### Editing
 
      frb-note-buffer
-     frb-note-region 
+     frb-note-region       - default keybinding is C-c C-f 
      frb-note <message>
 
 ### Viewing

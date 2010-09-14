@@ -127,7 +127,7 @@
         (set-buffer-modified-p nil)
         (switch-to-buffer frb-buffer)
         (goto-line 10)
-        
+
         (let ((j (json-read-from-string (buffer-substring-no-properties (point)
                                                                         (point-max)))))
           (delete-region (point-min) (point-max))
@@ -151,5 +151,7 @@
     The buffer contains the raw HTTP response sent by the server."
   (print status)
   (switch-to-buffer (current-buffer)))
+
+(global-set-key (kbd "C-c C-f") 'frb-note-region)
 
 (provide 'frb.el)
