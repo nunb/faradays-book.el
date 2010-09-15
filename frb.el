@@ -56,31 +56,10 @@
   :type '(choice (string) (const :tag "Ask every time" nil))
   :group 'frb)
 
-(defun frb-post (path query-string)
-  (let* ((username (or frb-username (read-from-minibuffer "User: ")))
-         (password (or frb-password (read-passwd "Password: ")))
-         (uri (format "%s/api/1.0/%s" frb-server path))
-         (url-request-method "POST")
-         (qs (concat (format "auth_email=%s&auth_password=%s&"
-                             username
-                             (md5 password)) query-string))
-         (url-request-data qs))
-    (frb-save-creds username password)
-    (url-retrieve uri 'kill-url-buffer)))
+;; Key-bindings
+(global-set-key (kbd "C-c C-f") 'frb-note-region)
 
-(defun frb-get (path &optional query-string)
-  (let* ((username (or frb-username (read-from-minibuffer "User: ")))
-         (password (or frb-password (read-passwd "Password: ")))
-         (uri (format "%s/api/1.0/%s" frb-server path))
-         (url-request-method "GET")
-         (qs (if query-string
-                 (concat uri (format "?auth_email=%s&auth_password=%s&"
-                                     username (md5 password)) query-string)
-               (concat uri (format "?auth_email=%s&auth_password=%s"
-                                   username (md5 password))))))
-    (frb-save-creds username password)
-    (frb-viewer path (url-retrieve-synchronously qs))))
-
+;;; Commands/Interfaces
 (defun frb-note-region (beg end)
   "Send the region to the frb server specified in `frb-server'"
   (interactive "r")
@@ -127,7 +106,6 @@
   (interactive)
   (frb-note-region (point) (point-max)))
 
-;;; The frb viewer: new(n) edit(e) show(s) delete(d)
 (defun frb-tags ()
   (interactive)
   (frb-get "tags"))
@@ -144,6 +122,44 @@
   (interactive)
   (frb-open-get "openbook"))
 
+;;; Post-helpers
+
+(defun frb-post (path query-string)
+  (let* ((username (or frb-username (read-from-minibuffer "User: ")))
+         (password (or frb-password (read-passwd "Password: ")))
+         (uri (format "%s/api/1.0/%s" frb-server path))
+         (url-request-method "POST")
+         (qs (concat (format "auth_email=%s&auth_password=%s&"
+                             username
+                             (md5 password)) query-string))
+         (url-request-data qs))
+    (frb-save-creds username password)
+    (url-retrieve uri 'kill-url-buffer)))
+
+(defun kill-url-buffer (status)
+  "Kill the buffer returned by `url-retrieve'."
+  (kill-buffer (current-buffer)))
+
+(defun switch-to-url-buffer (status)
+  "Switch to the buffer returned by `url-retreive'.
+    The buffer contains the raw HTTP response sent by the server."
+  (switch-to-buffer (current-buffer)))
+
+;; View-helpers
+
+(defun frb-get (path &optional query-string)
+  (let* ((username (or frb-username (read-from-minibuffer "User: ")))
+         (password (or frb-password (read-passwd "Password: ")))
+         (uri (format "%s/api/1.0/%s" frb-server path))
+         (url-request-method "GET")
+         (qs (if query-string
+                 (concat uri (format "?auth_email=%s&auth_password=%s&"
+                                     username (md5 password)) query-string)
+               (concat uri (format "?auth_email=%s&auth_password=%s"
+                                   username (md5 password))))))
+    (frb-save-creds username password)
+    (frb-viewer path (url-retrieve-synchronously qs))))
+
 (defun frb-open-get (path &optional query-string)
   (let* ((uri (format "%s/api/1.0/%s" frb-server path))
          (url-request-method "GET")
@@ -153,6 +169,7 @@
     (setq url-mime-encoding-string "identity")
     (frb-viewer path (url-retrieve-synchronously qs))))
 
+;;; The frb viewer: new(n) edit(e) show(s) delete(d)
 (defun frb-viewer (fn-type frb-buffer)
   (funcall (intern-soft (format "frb-viewer-%s" fn-type)) frb-buffer))
 
@@ -194,18 +211,6 @@
 (defun frb-viewer-openbook (frb-buffer)
   (frb-viewer-notes frb-buffer))
 
-;;; The openbook viewer: show(s)
-
-(defun kill-url-buffer (status)
-  "Kill the buffer returned by `url-retrieve'."
-  (kill-buffer (current-buffer)))
-
-(defun switch-to-url-buffer (status)
-  "Switch to the buffer returned by `url-retreive'.
-    The buffer contains the raw HTTP response sent by the server."
-  (print status)
-  (switch-to-buffer (current-buffer)))
-
 (defun format-tags (x)
   (dolist (p x) (insert (format "  %s    %s\n" (cdr (car (cdr p))) (cdr (car p))))))
 
@@ -216,7 +221,5 @@
 
 (defun frb-save-creds (username password)
   (or frb-username (set-variable frb-username (format "%s" username))))
-
-(global-set-key (kbd "C-c C-f") 'frb-note-region)
 
 (provide 'frb)
