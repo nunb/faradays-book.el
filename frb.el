@@ -79,13 +79,7 @@
                (concat uri (format "?auth_email=%s&auth_password=%s"
                                    username (md5 password))))))
     (frb-save-creds username password)
-    (setq frb-buffer (url-retrieve-synchronously qs))
-    (with-current-buffer frb-buffer
-      (progn
-        (set-visited-file-name (format "frb #%s" (random)))
-        (delete-region (point-min) (point))
-        (set-buffer-modified-p nil)
-        (switch-to-buffer frb-buffer)))))
+    (frb-viewer path (url-retrieve-synchronously qs))))
 
 (defun frb-note-region (beg end)
   "Send the region to the frb server specified in `frb-server'"
@@ -142,6 +136,14 @@
   (interactive)
   (frb-get "notes"))
 
+(defun frb-open-tags ()
+  (interactive)
+  (frb-open-get "opentags"))
+
+(defun frb-open-notes ()
+  (interactive)
+  (frb-open-get "openbook"))
+
 (defun frb-open-get (path &optional query-string)
   (let* ((uri (format "%s/api/1.0/%s" frb-server path))
          (url-request-method "GET")
@@ -161,26 +163,38 @@
       (delete-region (point-min) (point))
       (set-buffer-modified-p nil)
       (switch-to-buffer frb-buffer)
-      (goto-line 10)
+       (goto-line 10)
       (let* ((j (json-read-from-string
                  (buffer-substring-no-properties (point) (point-max))))
              (k  (append j nil)))
         (delete-region (point-min) (point-max))
-        (format-plist k)
+        (format-tags k)
         (sort-columns nil (point-min) (point-max))
+        (goto-line 1)))))
+
+(defun frb-viewer-notes (frb-buffer)
+  (with-current-buffer frb-buffer
+    (progn
+      (set-visited-file-name (format "frb #%s" (random)))
+      (delete-region (point-min) (point))
+      (set-buffer-modified-p nil)
+      (switch-to-buffer frb-buffer)
+      (goto-line 10)
+      (let* ((j (json-read-from-string
+                 (buffer-substring-no-properties (point) (point-max))))
+             (k  (append j nil)))
+        
+        (delete-region (point-min) (point-max))
+        (format-notes k)
         (goto-line 1)))))
 
 (defun frb-viewer-opentags (frb-buffer)
   (frb-viewer-tags frb-buffer))
 
-;;; The openbook viewer: show(s)
-(defun frb-open-tags ()
-  (interactive)
-  (frb-open-get "opentags"))
+(defun frb-viewer-openbook (frb-buffer)
+  (frb-viewer-notes frb-buffer))
 
-(defun frb-open-notes ()
-  (interactive)
-  (frb-open-get "opennotes"))
+;;; The openbook viewer: show(s)
 
 (defun kill-url-buffer (status)
   "Kill the buffer returned by `url-retrieve'."
@@ -192,8 +206,13 @@
   (print status)
   (switch-to-buffer (current-buffer)))
 
-(defun format-plist (x)
+(defun format-tags (x)
   (dolist (p x) (insert (format "  %s    %s\n" (cdr (car (cdr p))) (cdr (car p))))))
+
+(defun format-notes (x)
+  (dolist (p x)
+    (progn
+      (insert (format "----\n%s\n%s\n" (cdr (nth 3 p)) (cdr (nth 4 p)))))))
 
 (defun frb-save-creds (username password)
   (or frb-username (set-variable frb-username (format "%s" username))) 
