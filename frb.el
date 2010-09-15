@@ -99,6 +99,11 @@
   (interactive)
   (frb-note-region (point-min) (point-max)))
 
+(defun frb-note-at-point ()
+  "Like frb-note-region but post from current point"
+  (interactive)
+  (frb-note-region (point) (point-max)))
+
 (defun frb-note ()
   (interactive)
   (frb-post "note/new" (format "body=%s&privacy=%s"
@@ -123,6 +128,11 @@
                                (read-from-minibuffer "Note: ")
                                "public")))
 
+(defun frb-open-note-at-point ()
+  "Like frb-note-at-point that is public"
+  (interactive)
+  (frb-note-region (point) (point-max)))
+
 ;;; The frb viewer: new(n) edit(e) show(s) delete(d)
 (defun frb-tags ()
   (interactive)
@@ -139,21 +149,29 @@
                  (concat uri (format "?%s" query-string))
                uri)))
     (setq url-mime-encoding-string "identity")
-    (setq frb-buffer (url-retrieve-synchronously qs))
-    (with-current-buffer frb-buffer
-      (progn
-        (set-visited-file-name (format "frb #%s" (random)))
-        (delete-region (point-min) (point))
-        (set-buffer-modified-p nil)
-        (switch-to-buffer frb-buffer)
-        (goto-line 10)
+    (frb-viewer path (url-retrieve-synchronously qs))))
 
-        (let* ((j (json-read-from-string
-                   (buffer-substring-no-properties (point) (point-max))))
-               (k  (append j nil))
-          (delete-region (point-min) (point-max))
-          (format-plist k)
-          (goto-line 1))))))
+(defun frb-viewer (fn-type frb-buffer)
+  (funcall (intern-soft (format "frb-viewer-%s" fn-type)) frb-buffer))
+
+(defun frb-viewer-tags (frb-buffer)
+  (with-current-buffer frb-buffer
+    (progn
+      (set-visited-file-name (format "frb #%s" (random)))
+      (delete-region (point-min) (point))
+      (set-buffer-modified-p nil)
+      (switch-to-buffer frb-buffer)
+      (goto-line 10)
+      (let* ((j (json-read-from-string
+                 (buffer-substring-no-properties (point) (point-max))))
+             (k  (append j nil)))
+        (delete-region (point-min) (point-max))
+        (format-plist k)
+        (sort-columns nil (point-min) (point-max))
+        (goto-line 1)))))
+
+(defun frb-viewer-opentags (frb-buffer)
+  (frb-viewer-tags frb-buffer))
 
 ;;; The openbook viewer: show(s)
 (defun frb-open-tags ()
@@ -175,7 +193,7 @@
   (switch-to-buffer (current-buffer)))
 
 (defun format-plist (x)
-  (dolist (p x) (insert (format "\t%s\t\t%s\n" (cdr (car (cdr p))) (cdr (car p))))))
+  (dolist (p x) (insert (format "  %s    %s\n" (cdr (car (cdr p))) (cdr (car p))))))
 
 (defun frb-save-creds (username password)
   (or frb-username (set-variable frb-username (format "%s" username))) 
