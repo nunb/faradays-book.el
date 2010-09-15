@@ -69,6 +69,8 @@
 
 ;; Key-bindings
 (global-set-key (kbd "C-c C-f") 'frb-note-region)
+(global-set-key (kbd "C-c C-o") 'frb-open-note-region)
+(global-set-key [f2] 'frb-note)
 
 ;;; Commands/Interfaces
 (defun frb-note-region (beg end)
@@ -145,6 +147,7 @@
                              (md5 password)) query-string))
          (url-request-data qs))
     (frb-save-creds username password)
+    (message "Added a faraday's note")
     (url-retrieve uri 'kill-url-buffer)))
 
 (defun kill-url-buffer (status)
