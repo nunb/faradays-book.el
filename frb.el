@@ -65,6 +65,7 @@
                              username
                              (md5 password)) query-string))
          (url-request-data qs))
+    (frb-save-creds username password)
     (url-retrieve uri 'kill-url-buffer)))
 
 (defun frb-get (path &optional query-string)
@@ -77,6 +78,7 @@
                                      username (md5 password)) query-string)
                (concat uri (format "?auth_email=%s&auth_password=%s"
                                    username (md5 password))))))
+    (frb-save-creds username password)
     (setq frb-buffer (url-retrieve-synchronously qs))
     (with-current-buffer frb-buffer
       (progn
@@ -146,12 +148,11 @@
         (switch-to-buffer frb-buffer)
         (goto-line 10)
 
-        (let* ((j (buffer-substring-no-properties (point)
-                                                  (point-max)))
-               (r (substring j 1 -1))
-               (s (read-from-string r)))
+        (let* ((j (json-read-from-string
+                   (buffer-substring-no-properties (point) (point-max))))
+               (k  (append j nil))
           (delete-region (point-min) (point-max))
-          (format-plist s)
+          (format-plist k)
           (goto-line 1))))))
 
 ;;; The openbook viewer: show(s)
@@ -173,12 +174,12 @@
   (print status)
   (switch-to-buffer (current-buffer)))
 
-(defun format-plist (p)
+(defun format-plist (x)
   (dolist (p x) (insert (format "\t%s\t\t%s\n" (cdr (car (cdr p))) (cdr (car p))))))
 
 (defun frb-save-creds (username password)
-  (or frb-username (set-variable frb-username username)) 
-  (or frb-username (set-variable frb-password password)))
+  (or frb-username (set-variable frb-username (format "%s" username))) 
+  (or frb-username (set-variable frb-password (format "%s" password))))
 
 (global-set-key (kbd "C-c C-f") 'frb-note-region)
 
