@@ -77,7 +77,6 @@
                                      username (md5 password)) query-string)
                (concat uri (format "?auth_email=%s&auth_password=%s"
                                    username (md5 password))))))
-    
     (setq frb-buffer (url-retrieve-synchronously qs))
     (with-current-buffer frb-buffer
       (progn
@@ -177,7 +176,10 @@
 (defun format-plist (p)
   (dolist (p x) (insert (format "\t%s\t\t%s\n" (cdr (car (cdr p))) (cdr (car p))))))
 
+(defun frb-save-creds (username password)
+  (or frb-username (set-variable frb-username username)) 
+  (or frb-username (set-variable frb-password password)))
+
 (global-set-key (kbd "C-c C-f") 'frb-note-region)
 
-(provide 'frb.el)
-
+(provide 'frb)
