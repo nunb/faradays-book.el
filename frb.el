@@ -30,6 +30,7 @@
 (require 'url)
 (require 'md5)
 (require 'json)
+(require 'highline)
 
 (defgroup frb nil "client for the faraday's book")
 
@@ -39,7 +40,7 @@
   "Base URL for the frb-server"
   :type 'string
   :group 'frb)
-
+        
 (defcustom frb-server "http://faradaysbook.com"
   "Base URL for the frb-server"
   :type 'string
@@ -128,10 +129,13 @@
         (switch-to-buffer frb-buffer)
         (goto-line 10)
 
-        (let ((j (json-read-from-string (buffer-substring-no-properties (point)
-                                                                        (point-max)))))
+        (let* ((j (buffer-substring-no-properties (point)
+                                                  (point-max)))
+               (r (substring j 1 -1))
+               (s (read-from-string r)))
           (delete-region (point-min) (point-max))
-          (insert (format "%s\n" j)))))))
+          (format-plist s)
+          (goto-line 1))))))
 
 ;;; The openbook viewer: show(s)
 (defun frb-open-tags ()
@@ -152,6 +156,10 @@
   (print status)
   (switch-to-buffer (current-buffer)))
 
+(defun format-plist (p)
+  (dolist (p x) (insert (format "\t%s\t\t%s\n" (cdr (car (cdr p))) (cdr (car p))))))
+
 (global-set-key (kbd "C-c C-f") 'frb-note-region)
 
 (provide 'frb.el)
+
