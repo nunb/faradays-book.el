@@ -57,8 +57,8 @@
   :group 'frb)
 
 (defun frb-post (path query-string)
-  (let* ((username (or frb-username (read-from-minibuffer "userid: ")))
-         (password (or frb-password (read-passwd "password: ")))
+  (let* ((username (or frb-username (read-from-minibuffer "User: ")))
+         (password (or frb-password (read-passwd "Password: ")))
          (uri (format "%s/api/1.0/%s" frb-server path))
          (url-request-method "POST")
          (qs (concat (format "auth_email=%s&auth_password=%s&"
@@ -68,8 +68,8 @@
     (url-retrieve uri 'kill-url-buffer)))
 
 (defun frb-get (path &optional query-string)
-  (let* ((username (or frb-username (read-from-minibuffer "userid: ")))
-         (password (or frb-password (read-passwd "password: ")))
+  (let* ((username (or frb-username (read-from-minibuffer "User: ")))
+         (password (or frb-password (read-passwd "Password: ")))
          (uri (format "%s/api/1.0/%s" frb-server path))
          (url-request-method "GET")
          (qs (if query-string
@@ -103,6 +103,24 @@
   (frb-post "note/new" (format "body=%s&privacy=%s"
                                (read-from-minibuffer "Note: ")
                                "private")))
+
+(defun frb-open-note-region (beg end)
+  "Send the region to the frb server specified in `frb-server'"
+  (interactive "r")
+  (frb-post "note/new" (format "body=%s&privacy=%s"
+                               (buffer-substring-no-properties beg end)
+                               "public")))
+
+(defun frb-open-note-buffer ()
+  "Like frb-note-region but post the entire buffer"
+  (interactive)
+  (frb-open-note-region (point-min) (point-max)))
+
+(defun frb-open-note ()
+  (interactive)
+  (frb-post "note/new" (format "body=%s&privacy=%s"
+                               (read-from-minibuffer "Note: ")
+                               "public")))
 
 ;;; The frb viewer: new(n) edit(e) show(s) delete(d)
 (defun frb-tags ()
