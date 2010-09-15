@@ -215,8 +215,7 @@
       (insert (format "----\n%s\n%s\n" (cdr (nth 3 p)) (cdr (nth 4 p)))))))
 
 (defun frb-save-creds (username password)
-  (or frb-username (set-variable frb-username (format "%s" username))) 
-  (or frb-username (set-variable frb-password (format "%s" password))))
+  (or frb-username (set-variable frb-username (format "%s" username))))
 
 (global-set-key (kbd "C-c C-f") 'frb-note-region)
 
