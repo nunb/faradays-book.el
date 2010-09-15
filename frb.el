@@ -56,6 +56,17 @@
   :type '(choice (string) (const :tag "Ask every time" nil))
   :group 'frb)
 
+;; modes
+
+(setq frb-keywords
+      '(("[0-9]+\\/[0-9]+\\/[0-9]+ [0-9]+\\:[0-9]+\\:[0-9]+ \\+0000" . font-lock-variable-name-face)
+        ("public\\:[0-9]+" . font-lock-constant-face)
+        ("private\\:[0-9]+" . font-lock-comment-face)))
+
+(define-derived-mode frb-mode fundamental-mode
+  (setq font-lock-defaults '(frb-keywords))
+  (setq mode-name "frb"))
+
 ;; Key-bindings
 (global-set-key (kbd "C-c C-f") 'frb-note-region)
 
@@ -180,7 +191,8 @@
       (delete-region (point-min) (point))
       (set-buffer-modified-p nil)
       (switch-to-buffer frb-buffer)
-       (goto-line 10)
+      (frb-mode)
+      (goto-line 10)
       (let* ((j (json-read-from-string
                  (buffer-substring-no-properties (point) (point-max))))
              (k  (append j nil)))
@@ -196,6 +208,7 @@
       (delete-region (point-min) (point))
       (set-buffer-modified-p nil)
       (switch-to-buffer frb-buffer)
+      (frb-mode)
       (goto-line 10)
       (let* ((j (json-read-from-string
                  (buffer-substring-no-properties (point) (point-max))))
@@ -217,9 +230,12 @@
 (defun format-notes (x)
   (dolist (p x)
     (progn
-      (insert (format "----\n%s\n%s\n" (cdr (nth 3 p)) (cdr (nth 4 p)))))))
+      (insert (format "\n%s %s:%s\n%s\n" (cdr (nth 3 p)) (cdr (nth 0 p)) (cdr (nth 2 p)) (cdr (nth 4 p)))))))
 
 (defun frb-save-creds (username password)
   (or frb-username (set-variable frb-username (format "%s" username))))
+
+(defun frb-modeline ()
+  "format of the modeline: contain count of notes/tags")
 
 (provide 'frb)
