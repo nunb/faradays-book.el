@@ -209,7 +209,7 @@
 (defun frb-viewer-notes (frb-buffer)
   (with-current-buffer frb-buffer
     (progn
-      (set-visited-file-name (format "frb #%s" (random)))
+      (set-visited-file-name "*frbnotes*")
       (delete-region (point-min) (point))
       (set-buffer-modified-p nil)
       (switch-to-buffer frb-buffer)
