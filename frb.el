@@ -40,14 +40,14 @@
   "Base URL for the frb-server"
   :type 'string
   :group 'frb)
-        
+       
 (defcustom frb-server "http://faradaysbook.com"
   "Base URL for the frb-server"
   :type 'string
   :group 'frb)
 
 (defcustom frb-username nil
-  "frb username"
+  "frb username, which is the email address"
   :type '(choice (string) (const :tag "Ask every time" nil))
   :group 'frb)
 
@@ -136,6 +136,7 @@
 (defun frb-open-notes ()
   (interactive)
   (frb-open-get "openbook"))
+
 
 ;;; Post-helpers
 
@@ -238,7 +239,15 @@
       (insert (format "%s %s:%s\n%s\n\n" (cdr (nth 3 p)) (cdr (nth 0 p)) (cdr (nth 2 p)) (cdr (nth 4 p)))))))
 
 (defun frb-save-creds (username password)
-  (or frb-username (set-variable frb-username (format "%s" username))))
+  (or frb-username (setq frb-username username))
+  (or frb-password (setq frb-password password)))
+
+(defun frb-login ()
+  (interactive)
+  (let ((username (read-from-minibuffer "User: "))
+        (password (read-passwd "Password: ")))
+    (setq frb-username username)
+    (setq frb-password password)))
 
 (defun frb-modeline ()
   "format of the modeline: contain count of notes/tags")
