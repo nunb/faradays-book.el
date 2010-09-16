@@ -137,6 +137,10 @@
   (interactive)
   (frb-open-get "openbook"))
 
+(defun frb-notes-tag ()
+  "Get the notes for the given tag"
+  (interactive)
+  (frb-post "tag/notes" (format "tag=%s" (read-from-minibuffer "Note: "))))
 
 ;;; Post-helpers
 
@@ -228,6 +232,9 @@
   (frb-viewer-tags frb-buffer))
 
 (defun frb-viewer-openbook (frb-buffer)
+  (frb-viewer-notes frb-buffer))
+
+(defun frb-viewer-tag/notes (frb-buffer)
   (frb-viewer-notes frb-buffer))
 
 (defun format-tags (x)
