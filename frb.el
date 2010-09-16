@@ -137,10 +137,25 @@
   (interactive)
   (frb-open-get "openbook"))
 
+(defun frb-open-notes-tag ()
+  "Get the notes for the given tag"
+  (interactive)
+  (frb-get "tag/openbook" (format "tag_name=%s" (read-from-minibuffer "Tag: "))))
+
+(defun frb-open-note-id ()
+  "Get the note for the given id"
+  (interactive)
+  (frb-get "opennote" (format "note_id=%s" (read-from-minibuffer "Note: "))))
+
 (defun frb-notes-tag ()
   "Get the notes for the given tag"
   (interactive)
-  (frb-post "tag/notes" (format "tag=%s" (read-from-minibuffer "Note: "))))
+  (frb-get "tag/notes" (format "tag_name=%s" (read-from-minibuffer "Tag: "))))
+
+(defun frb-note-id ()
+  "Get the note for the given id"
+  (interactive)
+  (frb-get "note" (format "note_id=%s" (read-from-minibuffer "Note: "))))
 
 ;;; Post-helpers
 
@@ -237,6 +252,15 @@
 (defun frb-viewer-tag/notes (frb-buffer)
   (frb-viewer-notes frb-buffer))
 
+(defun frb-viewer-tag/opennotes (frb-buffer)
+  (frb-viewer-notes frb-buffer))
+
+(defun frb-viewer-note (frb-buffer)
+  (frb-viewer-notes frb-buffer))
+
+(defun frb-viewer-opennote (frb-buffer)
+  (frb-viewer-notes frb-buffer))
+
 (defun format-tags (x)
   (dolist (p x) (insert (format " - %s (%s)\n" (cdr (car (cdr p))) (cdr (car p))))))
 
@@ -244,6 +268,11 @@
   (dolist (p x)
     (progn
       (insert (format "%s %s:%s\n%s\n\n" (cdr (nth 3 p)) (cdr (nth 0 p)) (cdr (nth 2 p)) (cdr (nth 4 p)))))))
+
+(defun frb-modeline ()
+  "format of the modeline: contain count of notes/tags")
+
+;; login and session
 
 (defun frb-save-creds (username password)
   (or frb-username (setq frb-username username))
@@ -255,8 +284,5 @@
         (password (read-passwd "Password: ")))
     (setq frb-username username)
     (setq frb-password password)))
-
-(defun frb-modeline ()
-  "format of the modeline: contain count of notes/tags")
 
 (provide 'frb)
