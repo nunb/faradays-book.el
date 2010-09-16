@@ -24,7 +24,12 @@
 ;; (setq frb-username "username")
 ;; (setq frb-password "password")
 
-;; Isaac Praveen <icylisper@gmail.com> 
+;; Isaac Praveen <icylisper@gmail.com>
+
+;; Code components:
+;;   commands: M-x frb-*
+;;   modules: frb-auth, frb-http, frb-data, frb-view, frb-util
+;;   mode: frb-mode
 
 (eval-when-compile (require 'cl))
 (require 'url)
@@ -169,7 +174,7 @@
   (interactive)
   (let ((tags (frb-data/tags-all)))
     (frb-http/get "tag/notes"
-                  (format "tag_name=%s" (completing-read "Tag: " tags)))))
+                  (format "tag_name=%s" (completing-read "Get notes containing tag: " tags)))))
 
 (defun frb-open-notes ()
   "Get the open notes for the given tag"
@@ -190,33 +195,40 @@
   (frb-http/get "note"
                 (format "note_id=%s" (read-from-minibuffer "Note: "))))
 
-;;; Post-helpers
+(defun frb-login ()
+  (interactive)
+  (let ((username (read-from-minibuffer "User: "))
+        (password (read-passwd "Password: ")))
+    (setq frb-username username)
+    (setq frb-password password)))
+
+;; modules
+(defun frb-http/uri (path)
+  (format "%s/api/1.0/%s" frb-server path))
+
 (defun frb-http/post (path query-string)
   (let* ((username (or frb-username (read-from-minibuffer "User: ")))
          (password (or frb-password (read-passwd "Password: ")))
-         (uri (format "%s/api/1.0/%s" frb-server path))
+         (uri (frb-http/uri path))
          (url-request-method "POST")
          (qs (concat (format "auth_email=%s&auth_password=%s&"
                              username
                              (md5 password)) query-string))
          (url-request-data qs))
     (frb-auth/save-creds username password)
-    (url-retrieve uri 'kill-url-buffer)))
+    (url-retrieve uri 'frb-http/kill-buffer)))
 
-(defun kill-url-buffer (status)
-  "Kill the buffer returned by `url-retrieve'."
+(defun frb-http/kill-buffer (status)
   (kill-buffer (current-buffer))
   (message "Added a faraday's note"))
 
-(defun switch-to-url-buffer (status)
-  "Switch to the buffer returned by `url-retreive'.
-    The buffer contains the raw HTTP response sent by the server."
+(defun frb-http/switch-buffer (status)
   (switch-to-buffer (current-buffer)))
 
 (defun frb-http/get (path &optional query-string)
   (let* ((username (or frb-username (read-from-minibuffer "User: ")))
          (password (or frb-password (read-passwd "Password: ")))
-         (uri (format "%s/api/1.0/%s" frb-server path))
+         (uri (frb-http/uri path))
          (url-request-method "GET")
          (qs (if query-string
                  (concat uri (format "?auth_email=%s&auth_password=%s&"
@@ -227,7 +239,7 @@
     (frb/view-dispatcher path (url-retrieve-synchronously qs))))
 
 (defun frb-http/open-get (path &optional query-string)
-  (let* ((uri (format "%s/api/1.0/%s" frb-server path))
+  (let* ((uri (frb-http/uri path))
          (url-request-method "GET")
          (qs (if query-string
                  (concat uri (format "?%s" query-string))
@@ -245,7 +257,7 @@
                                      username (md5 password)) query-string)
                (concat uri (format "?auth_email=%s&auth_password=%s"
                                    username (md5 password))))))
-    (frb-save-creds username password)
+    (frb-auth/save-creds username password)
     (frb-data/stash (url-retrieve-synchronously qs))))
 
 (defun frb-data/open (path &optional query-string)
@@ -353,18 +365,9 @@
 (defun frb-view/modeline ()
   "format of the modeline: contain count of notes/tags")
 
-;; login and session
-
 (defun frb-auth/save-creds (username password)
   (or frb-username (setq frb-username username))
   (or frb-password (setq frb-password password)))
-
-(defun frb-auth/frb-login ()
-  (interactive)
-  (let ((username (read-from-minibuffer "User: "))
-        (password (read-passwd "Password: ")))
-    (setq frb-username username)
-    (setq frb-password password)))
 
 (defun frb-util/set-buffer (name buffer)
   (progn
