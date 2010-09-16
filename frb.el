@@ -236,7 +236,7 @@
                (concat uri (format "?auth_email=%s&auth_password=%s"
                                    username (md5 password))))))
     (frb-auth/save-creds username password)
-    (frb/view-dispatcher path (url-retrieve-synchronously qs))))
+    (frb-view/dispatcher path (url-retrieve-synchronously qs))))
 
 (defun frb-http/open-get (path &optional query-string)
   (let* ((uri (frb-http/uri path))
@@ -332,22 +332,22 @@
       (goto-line 1))))
 
 (defun frb-view/opentags (frb-buffer)
-  (frb-viewer-tags frb-buffer))
+  (frb-view/tags frb-buffer))
 
 (defun frb-view/openbook (frb-buffer)
-  (frb-viewer-notes frb-buffer))
+  (frb-view/notes frb-buffer))
 
 (defun frb-view/tag/notes (frb-buffer)
-  (frb-viewer-notes frb-buffer))
+  (frb-view/notes frb-buffer))
 
 (defun frb-view/tag/opennotes (frb-buffer)
-  (frb-viewer-notes frb-buffer))
+  (frb-view/notes frb-buffer))
 
 (defun frb-view/note (frb-buffer)
-  (frb-viewer-notes frb-buffer))
+  (frb-view/notes frb-buffer))
 
 (defun frb-view/opennote (frb-buffer)
-  (frb-viewer-notes frb-buffer))
+  (frb-view/notes frb-buffer))
 
 (defun frb-view/format-tags (x)
   (dolist (p x)
