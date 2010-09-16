@@ -56,6 +56,9 @@
   :type '(choice (string) (const :tag "Ask every time" nil))
   :group 'frb)
 
+(defvar frb-stash)
+(defvar frb-tags-current)
+
 ;; modes
 
 (setq frb-keywords
@@ -150,12 +153,19 @@
 (defun frb-notes-tag ()
   "Get the notes for the given tag"
   (interactive)
+  (let ((tags (frb-tags-all)))
+    (frb-get "tag/notes" (format "tag_name=%s" (completing-read "Tag: " tags)))))
+
+(defun frb-notes-tag-debug ()
+  "Get the notes for the given tag"
+  (interactive)
   (frb-get "tag/notes" (format "tag_name=%s" (read-from-minibuffer "Tag: "))))
 
 (defun frb-note-id ()
   "Get the note for the given id"
   (interactive)
   (frb-get "note" (format "note_id=%s" (read-from-minibuffer "Note: "))))
+
 
 ;;; Post-helpers
 
@@ -205,42 +215,84 @@
     (setq url-mime-encoding-string "identity")
     (frb-viewer path (url-retrieve-synchronously qs))))
 
+(defun frb-data (path &optional query-string)
+  (let* ((username (or frb-username (read-from-minibuffer "User: ")))
+         (password (or frb-password (read-passwd "Password: ")))
+         (uri (format "%s/api/1.0/%s" frb-server path))
+         (url-request-method "GET")
+         (qs (if query-string
+                 (concat uri (format "?auth_email=%s&auth_password=%s&"
+                                     username (md5 password)) query-string)
+               (concat uri (format "?auth_email=%s&auth_password=%s"
+                                   username (md5 password))))))
+    (frb-save-creds username password)
+    (frb-stasher (url-retrieve-synchronously qs))))
+
+(defun frb-open-data (path &optional query-string)
+  (let* ((uri (format "%s/api/1.0/%s" frb-server path))
+         (url-request-method "GET")
+         (qs (if query-string
+                 (concat uri (format "?%s" query-string))
+               uri)))
+    (setq url-mime-encoding-string "identity")
+    (frb-stasher (url-retrieve-synchronously qs))))
+
+;; The frb stasher - to get data
+(defun frb-stasher (frb-buffer)
+  (with-current-buffer frb-buffer
+    (progn
+      (set-visited-file-name (format "frbdata" (random)))
+      (delete-region (point-min) (point))
+      (set-buffer-modified-p nil)
+      (switch-to-buffer frb-buffer)
+      (goto-line 10)
+      (let* ((j (json-read-from-string
+                (buffer-substring-no-properties (point) (point-max))))
+             (k  (append j nil)))
+        (setq frb-stash k))))
+  (kill-buffer frb-buffer))
+
 ;;; The frb viewer: new(n) edit(e) show(s) delete(d)
 (defun frb-viewer (fn-type frb-buffer)
   (funcall (intern-soft (format "frb-viewer-%s" fn-type)) frb-buffer))
 
 (defun frb-viewer-tags (frb-buffer)
+  (when (get-buffer "frb-tags")
+    (kill-buffer "frb-tags"))
   (with-current-buffer frb-buffer
     (progn
-      (set-visited-file-name (format "frb #%s" (random)))
+      (set-visited-file-name "frb-tags")
       (delete-region (point-min) (point))
       (set-buffer-modified-p nil)
       (switch-to-buffer frb-buffer)
       (frb-mode)
-      (goto-line 10)
-      (let* ((j (json-read-from-string
-                 (buffer-substring-no-properties (point) (point-max))))
-             (k  (append j nil)))
-        (delete-region (point-min) (point-max))
-        (format-tags k)
-        (sort-columns nil (point-min) (point-max))
-        (goto-line 1)))))
+      (goto-line 10))
+    (let* ((j (json-read-from-string
+               (buffer-substring-no-properties (point) (point-max))))
+           (k  (append j nil)))
+      (delete-region (point-min) (point-max))
+      (format-tags k)
+      (sort-columns nil (point-min) (point-max))
+      (setq buffer-read-only t)
+      (goto-line 1))))
 
 (defun frb-viewer-notes (frb-buffer)
+  (when (get-buffer "frb-notes")
+    (kill-buffer "frb-notes"))
   (with-current-buffer frb-buffer
     (progn
-      (set-visited-file-name "*frbnotes*")
-      (delete-region (point-min) (point))
-      (set-buffer-modified-p nil)
+      (set-visited-file-name "frb-notes")
       (switch-to-buffer frb-buffer)
       (frb-mode)
       (goto-line 10)
       (let* ((j (json-read-from-string
                  (buffer-substring-no-properties (point) (point-max))))
-             (k  (append j nil)))
+            (k  (append j nil)))
         
         (delete-region (point-min) (point-max))
         (format-notes k)
+        (setq buffer-read-only t)
+        (set-buffer-modified-p nil)
         (goto-line 1)))))
 
 (defun frb-viewer-opentags (frb-buffer)
@@ -284,5 +336,17 @@
         (password (read-passwd "Password: ")))
     (setq frb-username username)
     (setq frb-password password)))
+
+;; data
+(defun frb-tags-all ()
+  "Get the notes for the given tag"
+  (frb-data "tags")
+  (let (value)
+    (dolist (e frb-stash value)
+      (setq value (cons (cdr (car (cdr e))) value)))))
+
+(defun frb-notes-count ()
+  "Get the notes for the given tag"
+  (frb-data "count"))
 
 (provide 'frb)
