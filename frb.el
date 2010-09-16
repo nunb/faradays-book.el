@@ -336,7 +336,6 @@
     (let* ((j (json-read-from-string
                (buffer-substring-no-properties (point) (point-max))))
            (k  (append j nil)))
-        
       (delete-region (point-min) (point-max))
       (frb-view/format-notes k)
       (setq buffer-read-only t)
@@ -397,7 +396,7 @@
     (goto-line 10)))
 
 (defun frb-util/kill-buffer (name)
-  (when (get-buffer "frb-tags")
-    (kill-buffer "frb-tags")))
+  (when (get-buffer name)
+    (kill-buffer name)))
 
 (provide 'frb)
