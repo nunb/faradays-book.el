@@ -27,9 +27,9 @@
 ;; Isaac Praveen <icylisper@gmail.com>
 
 ;; Code components:
-;;   commands: M-x frb-*
-;;   modules: frb-auth, frb-http, frb-data, frb-view, frb-util
-;;   mode: frb-mode
+;;   commands : M-x frb-*
+;;   modules  : frb-auth, frb-http, frb-data, frb-view, frb-util
+;;   modes    : frb-mode, frb-tags-mode
 
 (eval-when-compile (require 'cl))
 (require 'url)
@@ -69,7 +69,7 @@
 
 ;; modes
 
-(setq frb-keywords
+(setq frb-notes-keywords
       '(("[0-9]+\\/[0-9]+\\/[0-9]+ [0-9]+\\:[0-9]+\\:[0-9]+ \\+0000" . font-lock-variable-name-face)
         ("public\\:[0-9]+" . font-lock-constant-face)
         ("private\\:[0-9]+" . font-lock-comment-face)))
@@ -78,9 +78,9 @@
       '((" - [a-z]+" . font-lock-variable-name-face)
         (" ([0-9]+)" . font-lock-constant-face)))
 
-(define-derived-mode frb-mode fundamental-mode
-  (setq font-lock-defaults '(frb-keywords))
-  (setq mode-name "frb"))
+(define-derived-mode frb-notes-mode fundamental-mode
+  (setq font-lock-defaults '(frb-notes-keywords))
+  (setq mode-name "frb-notes"))
 
 (define-derived-mode frb-tags-mode fundamental-mode
   (setq font-lock-defaults '(frb-tags-keywords))
@@ -97,7 +97,7 @@
 (global-set-key [f5] 'frb-notes)
 (define-key frb-tags-mode-map "?" 'frb-view/show-tag-help)
 (define-key frb-tags-mode-map [return] 'frb-view/notes-at-point)
-(define-key frb-mode-map "?" 'frb-view/show-help)
+(define-key frb-notes-mode-map "?" 'frb-view/show-help)
 
 
 ;;; Commands/Interfaces
@@ -332,7 +332,7 @@
   (frb-util/kill-buffer "frb-tags")
   (with-current-buffer frb-buffer
     (frb-util/set-buffer "frb-tags" frb-buffer)
-    (frb-mode)
+    (frb-notes-mode)
     (let* ((j (json-read-from-string
                (buffer-substring-no-properties (point) (point-max))))
            (k  (append j nil)))
