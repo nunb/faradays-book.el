@@ -31,6 +31,9 @@
 (require 'md5)
 (require 'json)
 (require 'highline)
+(require 'mcomplete)
+
+(mcomplete-mode 1)
 
 (defgroup frb nil "client for the faraday's book")
 
@@ -73,9 +76,14 @@
   (setq mode-name "frb"))
 
 ;; Key-bindings
-(global-set-key (kbd "C-c C-f") 'frb-note-region)
+
+(global-set-key (kbd "C-c C-p") 'frb-note-region)
 (global-set-key (kbd "C-c C-o") 'frb-open-note-region)
+(global-set-key (kbd "C-c C-n") 'frb-notes)
+(global-set-key (kbd "C-c C-n") 'frb-open-notes)
+(global-set-key (kbd "C-c C-t") 'frb-tags)
 (global-set-key [f2] 'frb-note)
+(global-set-key [f5] 'frb-notes)
 
 ;;; Commands/Interfaces
 (defun frb-note-region (beg end)
@@ -128,7 +136,7 @@
   (interactive)
   (frb-get "tags"))
 
-(defun frb-notes ()
+(defun frb-notes-all ()
   (interactive)
   (frb-get "notes"))
 
@@ -136,7 +144,7 @@
   (interactive)
   (frb-open-get "opentags"))
 
-(defun frb-open-notes ()
+(defun frb-open-notes-all ()
   (interactive)
   (frb-open-get "openbook"))
 
@@ -150,11 +158,17 @@
   (interactive)
   (frb-get "opennote" (format "note_id=%s" (read-from-minibuffer "Note: "))))
 
-(defun frb-notes-tag ()
+(defun frb-notes ()
   "Get the notes for the given tag"
   (interactive)
   (let ((tags (frb-tags-all)))
     (frb-get "tag/notes" (format "tag_name=%s" (completing-read "Tag: " tags)))))
+
+(defun frb-open-notes ()
+  "Get the open notes for the given tag"
+  (interactive)
+  (let ((tags (frb-open-tags-all)))
+    (frb-get "tag/openotes" (format "tag_name=%s" (completing-read "Tag: " tags)))))
 
 (defun frb-notes-tag-debug ()
   "Get the notes for the given tag"
@@ -337,10 +351,16 @@
     (setq frb-username username)
     (setq frb-password password)))
 
-;; data
 (defun frb-tags-all ()
   "Get the notes for the given tag"
   (frb-data "tags")
+  (let (value)
+    (dolist (e frb-stash value)
+      (setq value (cons (cdr (car (cdr e))) value)))))
+
+(defun frb-open-tags-all ()
+  "Get the notes for the given tag"
+  (frb-open-data "opentags")
   (let (value)
     (dolist (e frb-stash value)
       (setq value (cons (cdr (car (cdr e))) value)))))
