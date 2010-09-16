@@ -329,9 +329,9 @@
       (goto-line 1))))
 
 (defun frb-view/notes (frb-buffer)
-  (frb-util/kill-buffer "frb-tags")
+  (frb-util/kill-buffer "frb-notes")
   (with-current-buffer frb-buffer
-    (frb-util/set-buffer "frb-tags" frb-buffer)
+    (frb-util/set-buffer "frb-notes" frb-buffer)
     (frb-notes-mode)
     (let* ((j (json-read-from-string
                (buffer-substring-no-properties (point) (point-max))))
