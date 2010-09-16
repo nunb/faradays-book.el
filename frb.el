@@ -72,13 +72,19 @@
 (setq frb-keywords
       '(("[0-9]+\\/[0-9]+\\/[0-9]+ [0-9]+\\:[0-9]+\\:[0-9]+ \\+0000" . font-lock-variable-name-face)
         ("public\\:[0-9]+" . font-lock-constant-face)
-        ("private\\:[0-9]+" . font-lock-comment-face)
-        (" - [a-z]+" . font-lock-variable-name-face)
+        ("private\\:[0-9]+" . font-lock-comment-face)))
+
+(setq frb-tags-keywords
+      '((" - [a-z]+" . font-lock-variable-name-face)
         (" ([0-9]+)" . font-lock-constant-face)))
 
 (define-derived-mode frb-mode fundamental-mode
   (setq font-lock-defaults '(frb-keywords))
   (setq mode-name "frb"))
+
+(define-derived-mode frb-tags-mode fundamental-mode
+  (setq font-lock-defaults '(frb-tags-keywords))
+  (setq mode-name "frb-tags"))
 
 ;; Key-bindings
 
@@ -89,6 +95,10 @@
 (global-set-key (kbd "C-c C-t") 'frb-tags)
 (global-set-key [f2] 'frb-note)
 (global-set-key [f5] 'frb-notes)
+(define-key frb-tags-mode-map "?" 'frb-view/show-tag-help)
+(define-key frb-tags-mode-map [return] 'frb-view/notes-at-point)
+(define-key frb-mode-map "?" 'frb-view/show-help)
+
 
 ;;; Commands/Interfaces
 (defun frb-note-region (beg end)
@@ -307,6 +317,7 @@
   (frb-util/kill-buffer "frb-tags")
   (with-current-buffer frb-buffer
     (frb-util/set-buffer "frb-tags" frb-buffer)
+    (frb-tags-mode)
     (let* ((j (json-read-from-string
                (buffer-substring-no-properties (point) (point-max))))
            (k  (append j nil)))
@@ -321,6 +332,7 @@
   (frb-util/kill-buffer "frb-tags")
   (with-current-buffer frb-buffer
     (frb-util/set-buffer "frb-tags" frb-buffer)
+    (frb-mode)
     (let* ((j (json-read-from-string
                (buffer-substring-no-properties (point) (point-max))))
            (k  (append j nil)))
@@ -362,8 +374,17 @@
                (cdr (nth 3 p)) (cdr (nth 0 p))
                (cdr (nth 2 p)) (cdr (nth 4 p)))))))
 
-(defun frb-view/modeline ()
-  "format of the modeline: contain count of notes/tags")
+(defun frb-view/show-tag-help ()
+  (interactive)
+  (message "help: Notes (return)"))
+
+(defun frb-view/show-help ()
+  (interactive)
+  (message "help: Edit(e)  Delete(d)  OpenNote(o)"))
+
+(defun frb-view/notes-at-point ()
+  (interactive)
+  (message "help: Edit(e)  Delete(d)  OpenNote(o)"))
 
 (defun frb-auth/save-creds (username password)
   (or frb-username (setq frb-username username))
@@ -373,7 +394,6 @@
   (progn
     (set-visited-file-name name)
     (switch-to-buffer buffer)
-    (frb-mode)
     (goto-line 10)))
 
 (defun frb-util/kill-buffer (name)
