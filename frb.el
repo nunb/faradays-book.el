@@ -380,7 +380,7 @@
 
 (defun frb-view/show-help ()
   (interactive)
-  (message "help: (e)dit (d)elete (u)nshare (s)hare (t)ags (r)efresh (q)uit"))
+  (message "help: Edit(e) Delete(d) Share(s) Tags(t) Refresh(r) Quit(q)"))
 
 (defun frb-view/notes-at-point ()
   (interactive)
