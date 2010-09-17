@@ -1,4 +1,5 @@
 ;;; frb.el -- Emacs client for faraday's book
+;;; version 0.1
 
 ;; Client to Prakash Raman's http://faradaysbook.com
 
@@ -75,7 +76,7 @@
         ("private\\:[0-9]+" . font-lock-comment-face)))
 
 (setq frb-tags-keywords
-      '((" - [a-z]+" . font-lock-variable-name-face)
+      '(("[a-z]+" . font-lock-variable-name-face)
         (" ([0-9]+)" . font-lock-constant-face)))
 
 (define-derived-mode frb-notes-mode fundamental-mode
@@ -363,7 +364,7 @@
 (defun frb-view/format-tags (x)
   (dolist (p x)
     (insert
-     (format " - %s (%s)\n" (cdr (car (cdr p))) (cdr (car p))))))
+     (format "%s (%s)\n" (cdr (car (cdr p))) (cdr (car p))))))
 
 (defun frb-view/format-notes (x)
   (dolist (p x)
@@ -379,11 +380,13 @@
 
 (defun frb-view/show-help ()
   (interactive)
-  (message "help: Edit(e)  Delete(d)  OpenNote(o)"))
+  (message "help: Edit(e)  Delete(d)  OpenNote(o) Tags(t)"))
 
 (defun frb-view/notes-at-point ()
   (interactive)
-  (message "help: Edit(e)  Delete(d)  OpenNote(o)"))
+  (let ((tag (thing-at-point 'word)))
+    (frb-http/get "tag/notes"
+                  (format "tag_name=%s" tag))))
 
 (defun frb-auth/save-creds (username password)
   (or frb-username (setq frb-username username))
@@ -398,5 +401,7 @@
 (defun frb-util/kill-buffer (name)
   (when (get-buffer name)
     (kill-buffer name)))
+
+
 
 (provide 'frb)
