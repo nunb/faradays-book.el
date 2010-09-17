@@ -380,7 +380,7 @@
 
 (defun frb-view/show-help ()
   (interactive)
-  (message "help: Edit(e)  Delete(d)  OpenNote(o) Tags(t)"))
+  (message "help: (e)dit (d)elete (u)nshare (s)hare (t)ags (r)efresh (q)uit"))
 
 (defun frb-view/notes-at-point ()
   (interactive)
@@ -401,7 +401,5 @@
 (defun frb-util/kill-buffer (name)
   (when (get-buffer name)
     (kill-buffer name)))
-
-
 
 (provide 'frb)
