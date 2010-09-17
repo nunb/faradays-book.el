@@ -222,7 +222,7 @@
          (password (or frb-password (read-passwd "Password: ")))
          (uri (frb-http/uri path))
          (url-request-method "POST")
-         (qs (concat (format "auth_email=%s&auth_password=%s&"
+         (qs (concat (format "auth_email=%s&auth_password=%s&client=emacs&"
                              username
                              (md5 password)) query-string))
          (url-request-data qs))
