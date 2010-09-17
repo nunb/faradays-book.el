@@ -242,9 +242,9 @@
          (uri (frb-http/uri path))
          (url-request-method "GET")
          (qs (if query-string
-                 (concat uri (format "?auth_email=%s&auth_password=%s&"
+                 (concat uri (format "?auth_email=%s&auth_password=%s&client=emacs&"
                                      username (md5 password)) query-string)
-               (concat uri (format "?auth_email=%s&auth_password=%s"
+               (concat uri (format "?auth_email=%s&auth_password=%s&client=emacs"
                                    username (md5 password))))))
     (frb-auth/save-creds username password)
     (frb-view/dispatcher path (url-retrieve-synchronously qs))))
@@ -264,9 +264,9 @@
          (uri (format "%s/api/1.0/%s" frb-server path))
          (url-request-method "GET")
          (qs (if query-string
-                 (concat uri (format "?auth_email=%s&auth_password=%s&"
+                 (concat uri (format "?auth_email=%s&auth_password=%s&client=emacs&"
                                      username (md5 password)) query-string)
-               (concat uri (format "?auth_email=%s&auth_password=%s"
+               (concat uri (format "?auth_email=%s&auth_password=%s&client=emacs"
                                    username (md5 password))))))
     (frb-auth/save-creds username password)
     (frb-data/stash (url-retrieve-synchronously qs))))
