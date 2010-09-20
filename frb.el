@@ -372,7 +372,7 @@
       (insert
        (format "%s %s:%s\n%s\n\n"
                (cdr (nth 3 p)) (cdr (nth 0 p))
-               (cdr (nth 2 p)) (cdr (nth 4 p)))))))
+               (cdr (nth 2 p)) (cdr (nth 5 p)))))))
 
 (defun frb-view/show-tag-help ()
   (interactive)
