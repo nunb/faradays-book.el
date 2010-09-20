@@ -6,9 +6,10 @@ This wiki is about the emacs client for the wonderful faradays-book.
 
 1. Download http://github.com/icylisper/faradays-book.el/blob/master/frb.el
 2. Add frb.el to path
-     (require 'frb)
-     (setq frb-username <your-email-address>)
-     (setq frb-password <your-password>)
+
+    (require 'frb)
+    (setq frb-username <your-email-address>)
+    (setq frb-password <your-password>)
 
 # COMPONENTS
 The fraradays book emacs client has 4 components: 
@@ -33,12 +34,14 @@ The fraradays book emacs client has 4 components:
 
 ### VIEW NOTES
 * frb-notes-mode - a readonly buffer with syntax highlighting
+* Show help options
 * Edit a note (TODO)
 * Delete a note (TODO)
 * Share a note (TODO)
 
 ### VIEW TAGS
 * frb-tags-mode - a readonly buffer with syntax highlighting
+* Show help options
 * Get all notes for given tag
 
 ### POST
