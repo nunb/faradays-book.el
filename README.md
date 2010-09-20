@@ -1,16 +1,14 @@
 
-Welcome to the faradays-book.el wiki!
-
 Faradays-Book is a great way to store your random notes and have them organized by tags implicitly.
 This wiki is about the emacs client for the wonderful faradays-book.
 
 # INSTALL
 
-1. Download [[http://github.com/icylisper/faradays-book.el/blob/master/frb.el]]
+1. Download http://github.com/icylisper/faradays-book.el/blob/master/frb.el
 2. Add frb.el to path
-    (require 'frb)
-    (setq frb-username <your-email-address>)
-    (setq frb-password <your-password>)
+     (require 'frb)
+     (setq frb-username <your-email-address>)
+     (setq frb-password <your-password>)
 
 # COMPONENTS
 The fraradays book emacs client has 4 components: 
@@ -21,10 +19,9 @@ The fraradays book emacs client has 4 components:
 4. POST
 
 # FEATURES
-## 1.0 [CURRENT]
+## 1.0 [current]
 
 ### QUERY
-
 * Get all notes  `frb-notes-all`
 * Get all open notes `frb-open-notes`
 * Get all notes for given tag `frb-notes : tag`
@@ -32,10 +29,9 @@ The fraradays book emacs client has 4 components:
 * Get all tags   `frb-tags`
 * Get all open tags  `frb-open-tags` 
 * Option to login as a different user and query/post
-* Faradaysbook server can be any instance of the faradaysbook application. Defaults to [[http://faradaysbook.com]]
+* Faradaysbook server can be any instance of the faradaysbook application. Defaults to http://faradaysbook.com
 
 ### VIEW NOTES
-
 * frb-notes-mode - a readonly buffer with syntax highlighting
 * Edit a note (TODO)
 * Delete a note (TODO)
@@ -63,7 +59,7 @@ The fraradays book emacs client has 4 components:
 ### VIEW TAGS
 * Caching of  tags
 
-###POST
+### POST
 * frb-post-mode - an alternative interactive mode to post notes.
 * Highlight existing tags in a new note
 * Spell-checker 
