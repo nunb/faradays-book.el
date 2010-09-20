@@ -15,8 +15,8 @@ This wiki is about the emacs client for the wonderful faradays-book.
 The fraradays book emacs client has 4 components: 
 
 1. QUERY
-2. VIEW(notes)
-3. VIEW(tags)
+2. VIEW NOTES
+3. VIEW TAGS
 4. POST
 
 # FEATURES
