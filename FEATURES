@@ -1,0 +1,48 @@
+
+The client has 4 components: 
+ 1. QUERY
+ 2. VIEW(notes)
+ 3. VIEW(tags)
+ 4. NOTE
+
+== 0.1 [CURRENT]
+QUERY
+* Get all notes  `frb-notes-all`
+* Get all open notes `frb-open-notes`
+* Get all notes for given tag `frb-notes : tag`
+** Autocomplete tags in minibuffer
+* Get all tags   `frb-tags`
+* Get all open tags  `frb-open-tags` 
+
+VIEW NOTES
+* frb-notes-mode - a readonly buffer with syntax highlighting
+* Edit a note (TODO)
+* Delete a note (TODO)
+* Share a note (TODO)
+
+VIEW TAGS
+* frb-tags-mode - a readonly buffer with syntax highlighting
+* Get all notes for given note
+
+NOTE
+* Post a note `frb-note`
+* Post a region in a buffer `frb-note-region` 
+* Post an entire buffer `frb-note-buffer`
+
+== 0.2
+QUERY:
+* Get all notes by regex
+* Get all notes by time/duration
+* Caching of tags for fast lookup in minibuffer autocomplete
+
+VIEW NOTES
+* Support offline viewing
+
+VIEW TAGS
+* - 
+
+NOTE
+* frb-post-mode - an alternative interactive mode to post notes.
+* Highlight existing tags in a new note
+* Spell-checker 
+* Post a given file (support from dired mode)
