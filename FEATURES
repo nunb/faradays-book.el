@@ -5,7 +5,7 @@ The client has 4 components:
  3. VIEW(tags)
  4. NOTE
 
-== 0.1 [CURRENT]
+== 1.0 [CURRENT]
 QUERY
 * Get all notes  `frb-notes-all`
 * Get all open notes `frb-open-notes`
@@ -29,7 +29,7 @@ NOTE
 * Post a region in a buffer `frb-note-region` 
 * Post an entire buffer `frb-note-buffer`
 
-== 0.2
+== 1.1
 QUERY:
 * Get all notes by regex
 * Get all notes by time/duration
