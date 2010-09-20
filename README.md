@@ -23,9 +23,9 @@ Faradays-book emacs client has 4 components:
 # FEATURES
 ## 1.0 [current]
 ### POST COMMANDS
-* Post a note `frb-note` and `frb-open-note`
-* Post a region in a buffer `frb-note-region` and `frb-open-note-region`
-* Post an entire buffer `frb-note-buffer` and `frb-open-note-buffer`
+* Post a note `frb-note` / `frb-open-note`
+* Post a region in a buffer `frb-note-region` / `frb-open-note-region`
+* Post an entire buffer `frb-note-buffer` / `frb-open-note-buffer`
 
 ### QUERY COMMANDS
 * Get all notes  `frb-notes-all`
@@ -33,23 +33,23 @@ Faradays-book emacs client has 4 components:
 * Get all notes for given tag `frb-notes : tag` (autocomplete tags in minibuffer)
 * Get all tags   `frb-tags`
 * Get all open tags  `frb-open-tags` 
-* Command to login as a different user and query/post `frb-login`
+* Command to login as a different user `frb-login`
 
 ### NOTES MODE
-* frb-notes-mode - a readonly buffer with syntax highlighting
-* Show help options
+* `frb-notes-mode` - a minor mode for viewing notes with highlighting and interactive view
+* `?` shows help options
 * Edit a note (TODO)
 * Delete a note (TODO)
 * Share a note (TODO)
 
 ### TAGS MODE
-* frb-tags-mode - a readonly buffer with syntax highlighting
-* Show help options
-* Get all notes for given tag
+* `frb-tags-mode` - a major mode for viewing notes with highlighting and interactive view
+* `?` shows help options
+* [return] key on a tag gets all notes for the tag and shifts to notes-mode
 
 ## 1.1
 ### POST COMMANDS
-* `frb-post-mode` - an alternative interactive mode to post notes.
+* `frb-post-mode` - an alternate interactive mode to post notes.
 * Highlight existing tags in a new note
 * Spell-checker minor mode
 * Post a given file (support from dired mode) `frb-note-file` and `frb-open-note-file`
@@ -60,7 +60,7 @@ Faradays-book emacs client has 4 components:
 * Get all notes by time/duration. `frb-notes-time` pops-up an emacs calendar to chose date/duration.
 * Caching of tags for fast lookup in minibuffer autocomplete
 
-### VIEW MODE
+### NOTES MODE
 * Support offline viewing
 
 ### TAGS MODE
