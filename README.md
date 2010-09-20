@@ -55,9 +55,9 @@ Faradays-book emacs client has 4 components:
 * Post a given file (support from dired mode) `frb-note-file` and `frb-open-note-file`
 * Post multiple notes in the buffer by specifying separator (defaults to empty line) `frb-note-multi`
 
-### QUERY COMMANDS:
-* Get all notes by regex
-* Get all notes by time/duration
+### QUERY COMMANDS
+* Get all notes by regex. `frb-notes` takes a regex or a tag
+* Get all notes by time/duration. `frb-notes-time` pops-up an emacs calendar to chose date/duration.
 * Caching of tags for fast lookup in minibuffer autocomplete
 
 ### VIEW MODE
