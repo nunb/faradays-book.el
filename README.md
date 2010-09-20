@@ -1,28 +1,72 @@
 
-Emacs client for the wonderful note-tagging system : http://faradaysbook.com/
+Welcome to the faradays-book.el wiki!
 
-## INSTALL
+Faradays-Book is a great way to store your random notes and have them organized by tags implicitly.
+This wiki is about the emacs client for the wonderful faradays-book.
+
+# INSTALL
+
+1. Download [[http://github.com/icylisper/faradays-book.el/blob/master/frb.el]]
+2. Add frb.el to path
     (require 'frb)
     (setq frb-username <your-email-address>)
     (setq frb-password <your-password>)
 
-## COMMANDS
+# COMPONENTS
+The fraradays book emacs client has 4 components: 
 
-### Editing
+1. QUERY
+2. VIEW(notes)
+3. VIEW(tags)
+4. POST
 
-     frb-note-buffer
-     frb-note-region       - default keybinding is C-c C-f 
-     frb-note <message>
+# FEATURES
+## 1.0 [CURRENT]
 
-### Viewing
-     frb-tags
-     frb-notes
+### QUERY
 
-### Openbook
-     frb-open-tags
-     frb-open-notes
+* Get all notes  `frb-notes-all`
+* Get all open notes `frb-open-notes`
+* Get all notes for given tag `frb-notes : tag`
+   Autocomplete tags in minibuffer
+* Get all tags   `frb-tags`
+* Get all open tags  `frb-open-tags` 
+* Option to login as a different user and query/post
+* Faradaysbook server can be any instance of the faradaysbook application. Defaults to [[http://faradaysbook.com]]
 
-More to come:
-- frb viewer
-- faces for the viewer
+### VIEW NOTES
+
+* frb-notes-mode - a readonly buffer with syntax highlighting
+* Edit a note (TODO)
+* Delete a note (TODO)
+* Share a note (TODO)
+
+### VIEW TAGS
+* frb-tags-mode - a readonly buffer with syntax highlighting
+* Get all notes for given tag
+
+### POST
+* Post a note `frb-note`
+* Post a region in a buffer `frb-note-region` 
+* Post an entire buffer `frb-note-buffer`
+* Openbook clone of all post functionality
+
+## 1.1
+### QUERY:
+* Get all notes by regex
+* Get all notes by time/duration
+* Caching of tags for fast lookup in minibuffer autocomplete
+
+### VIEW NOTES
+* Support offline viewing
+
+### VIEW TAGS
+* Caching of  tags
+
+###POST
+* frb-post-mode - an alternative interactive mode to post notes.
+* Highlight existing tags in a new note
+* Spell-checker 
+* Post a given file (support from dired mode)
+* Post multiple notes by specifying separator (defaults to empty line)
 
