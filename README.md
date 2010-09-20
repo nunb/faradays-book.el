@@ -1,6 +1,6 @@
 
 Faradays-Book is a great way to store your random notes and have them organized by tags implicitly.
-This wiki is about the emacs client for the wonderful faradays-book.
+This is an emacs client for the wonderful faradays-book.
 
 # INSTALL
 
