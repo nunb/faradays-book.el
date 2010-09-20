@@ -12,7 +12,7 @@ Add frb.el to path
     (setq frb-password <your-password>)
 
 # COMPONENTS
-The fraradays book emacs client has 4 components: 
+The faradays book emacs client has 4 components: 
 
 1. POST COMMANDS
 2. QUERY COMMANDS
