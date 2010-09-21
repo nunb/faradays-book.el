@@ -72,8 +72,9 @@
 
 (setq frb-notes-keywords
       '(("[0-9]+\\/[0-9]+\\/[0-9]+ [0-9]+\\:[0-9]+\\:[0-9]+ \\+0000" . font-lock-variable-name-face)
-        ("public\\:[0-9]+" . font-lock-constant-face)
-        ("private\\:[0-9]+" . font-lock-comment-face)))
+        ("#[0-9]+" . font-lock-keyword-face)
+        (" -public" . font-lock-constant-face)
+        (" -private" . font-lock-comment-face)))
 
 (setq frb-tags-keywords
       '(("[a-z]+" . font-lock-variable-name-face)
@@ -98,7 +99,6 @@
 (global-set-key [f5] 'frb-notes)
 (define-key frb-tags-mode-map "?" 'frb-view/show-tag-help)
 (define-key frb-tags-mode-map [return] 'frb-view/notes-at-point)
-(define-key frb-notes-mode-map "?" 'frb-view/show-help)
 
 
 ;;; Commands/Interfaces
@@ -212,6 +212,25 @@
         (password (read-passwd "Password: ")))
     (setq frb-username username)
     (setq frb-password password)))
+
+(defun frb-note-delete ()
+  (interactive)
+  (let ((id (frb-util/get-id)))
+    (frb-http/post "note/delete"
+                   (format "note_id=%s" id))))
+
+(defun frb-note-edit ()
+  (interactive)
+  (let ((id (frb-util/get-id)))
+    (frb-http/post "note/edit"
+                   (format "note_id=%s" id))))
+
+(defun frb-note-share ()
+  (interactive)
+  (let ((id (frb-util/get-id))
+        (privacy (completing-read "Privacy: " '("private" "public"))))
+    (frb-http/post "note/set_privacy"
+                   (format "note_id=%s&privacy=%s" id privacy))))
 
 ;; modules
 (defun frb-http/uri (path)
@@ -370,9 +389,9 @@
   (dolist (p x)
     (progn
       (insert
-       (format "%s %s:%s\n%s\n\n"
-               (cdr (nth 3 p)) (cdr (nth 0 p))
-               (cdr (nth 2 p)) (cdr (nth 5 p)))))))
+       (format "#%s %s -%s\n%s\n\n"
+               (cdr (nth 2 p)) (cdr (nth 3 p))
+               (cdr (nth 0 p)) (cdr (nth 5 p)))))))
 
 (defun frb-view/show-tag-help ()
   (interactive)
@@ -380,7 +399,11 @@
 
 (defun frb-view/show-help ()
   (interactive)
-  (message "help: Edit(e) Delete(d) Share(s) Tags(t) Refresh(r) Quit(q)"))
+  (message "help: Edit(e) Delete(d) Share(s) Refresh(r) Quit(q)"))
+
+(define-key frb-notes-mode-map "?" 'frb-view/show-help)
+(define-key frb-notes-mode-map "d" 'frb-note-delete)
+(define-key frb-notes-mode-map "s" 'frb-note-share)
 
 (defun frb-view/notes-at-point ()
   (interactive)
@@ -401,5 +424,11 @@
 (defun frb-util/kill-buffer (name)
   (when (get-buffer name)
     (kill-buffer name)))
+
+(defun frb-util/get-id ()
+  (re-search-backward "#[0-9]+")
+  (goto-char (+ (point) 1))
+  (let ((id (thing-at-point 'word)))
+    id))
 
 (provide 'frb)
