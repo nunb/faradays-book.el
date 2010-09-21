@@ -21,11 +21,16 @@ Faradays-book emacs client has 4 components:
 4. TAGS MODE
 
 # FEATURES
-## 1.0 [current]
+
 ### POST COMMANDS
 * Post a note `frb-note` / `frb-open-note`
 * Post a region in a buffer `frb-note-region` / `frb-open-note-region`
 * Post an entire buffer `frb-note-buffer` / `frb-open-note-buffer`
+* `frb-post-mode` - an alternate interactive mode to post notes (*TODO*)
+* Highlight existing tags in a new note (*TODO*)
+* Spell-checker minor mode (*TODO*)
+* Post a given file (support from dired mode) `frb-note-file` and `frb-open-note-file` (*TODO*)
+* Post multiple notes in the buffer by specifying separator (defaults to empty line) `frb-note-multi` (*TODO*)
 
 ### QUERY COMMANDS
 * Get all notes  `frb-notes-all`
@@ -34,34 +39,21 @@ Faradays-book emacs client has 4 components:
 * Get all tags   `frb-tags`
 * Get all open tags  `frb-open-tags` 
 * Command to login as a different user `frb-login`
+* Get all notes by regex. `frb-notes` takes a regex or a tag (*TODO*)
+* Get all notes by time/duration. `frb-notes-time` pops-up an emacs calendar to chose date/duration. (*TODO*)
+* Caching of tags for fast lookup in minibuffer autocomplete (*TODO*)
 
 ### NOTES MODE
-* `frb-notes-mode` - a minor mode for viewing notes with highlighting and interactive view
+* `frb-notes-mode` - a minor mode for viewing notes with highlighting
+and interactive view 
 * `?` shows help options
-* Edit a note (TODO)
-* Delete a note (TODO)
-* Share a note (TODO)
+* Edit a note (*TODO*) 
+* Delete a note (*TODO*)
+* Share a note (*TODO*)
+* Offline viewing  (*TODO*)
 
 ### TAGS MODE
 * `frb-tags-mode` - a major mode for viewing notes with highlighting and interactive view
 * `?` shows help options
-* [return] key on a tag gets all notes for the tag and shifts to notes-mode
-
-## 1.1
-### POST COMMANDS
-* `frb-post-mode` - an alternate interactive mode to post notes.
-* Highlight existing tags in a new note
-* Spell-checker minor mode
-* Post a given file (support from dired mode) `frb-note-file` and `frb-open-note-file`
-* Post multiple notes in the buffer by specifying separator (defaults to empty line) `frb-note-multi`
-
-### QUERY COMMANDS
-* Get all notes by regex. `frb-notes` takes a regex or a tag
-* Get all notes by time/duration. `frb-notes-time` pops-up an emacs calendar to chose date/duration.
-* Caching of tags for fast lookup in minibuffer autocomplete
-
-### NOTES MODE
-* Support offline viewing
-
-### TAGS MODE
-* Caching of tags
+* [return] key on a tag gets all notes for the tag and shifts to notes-mode 
+* Caching of tags (*TODO*)
