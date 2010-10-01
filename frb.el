@@ -183,9 +183,12 @@
 (defun frb-notes ()
   "Get the notes for the given tag"
   (interactive)
-  (let ((tags (frb-data/tags-all)))
-    (frb-http/get "tag/notes"
-                  (format "tag_name=%s" (completing-read "Get notes containing tag: " tags)))))
+  (let* ((tags (frb-data/tags-all))
+         (tag (completing-read "Get notes containing tag: " tags)))
+    (if (not (string-equal tag ""))
+        (frb-http/get "tag/notes"
+                      (format "tag_name=%s" tag))
+      (frb-http/get "notes"))))
 
 (defun frb-open-notes ()
   "Get the open notes for the given tag"
@@ -229,7 +232,14 @@
 (defun frb-note-share ()
   (interactive)
   (let ((id (frb-util/get-id))
-        (privacy (completing-read "Privacy: " '("private" "public"))))
+        (privacy "public"))
+    (frb-http/post "note/set_privacy"
+                   (format "note_id=%s&privacy=%s" id privacy))))
+
+(defun frb-note-unshare ()
+  (interactive)
+  (let ((id (frb-util/get-id))
+        (privacy "private"))
     (frb-http/post "note/set_privacy"
                    (format "note_id=%s&privacy=%s" id privacy))))
 
@@ -276,7 +286,6 @@
   (kill-buffer (current-buffer)))
 
 (defun frb-http/post-status- (status)
-  (frb-util/kill-buffer "frb-notes")
   (with-current-buffer (current-buffer)
     (goto-line 10)
     (let ((j (buffer-substring-no-properties (point) (point-max))))
@@ -427,11 +436,14 @@
 
 (defun frb-view/show-help ()
   (interactive)
-  (message "help: Edit(e) Delete(d) Share(s) Refresh(r) Quit(q)"))
+  (if (frb-util/publicp)
+      (message "help: Edit(e) Delete(d) Unshare(u) Quit(q)")
+    (message "help: Edit(e) Delete(d) Share(s) Quit(q)")))
 
 (define-key frb-notes-mode-map "?" 'frb-view/show-help)
 (define-key frb-notes-mode-map "d" 'frb-note-delete)
 (define-key frb-notes-mode-map "s" 'frb-note-share)
+(define-key frb-notes-mode-map "u" 'frb-note-unshare)
 
 (defun frb-view/notes-at-point ()
   (interactive)
@@ -458,5 +470,13 @@
   (goto-char (+ (point) 1))
   (let ((id (thing-at-point 'word)))
     id))
+
+(defun frb-util/publicp ()
+  (re-search-backward "#[0-9]+")
+  (goto-char (+ (point) 32))
+  (let ((privacy (thing-at-point 'word)))
+    (if (string-equal privacy "public")
+        t
+      nil)))
 
 (provide 'frb)
