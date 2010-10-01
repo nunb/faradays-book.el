@@ -210,6 +210,7 @@
   (interactive)
   (let ((username (read-from-minibuffer "User: "))
         (password (read-passwd "Password: ")))
+    (frb-http/post- "authenticate" username password)
     (setq frb-username username)
     (setq frb-password password)))
 
@@ -239,21 +240,48 @@
 (defun frb-http/post (path query-string)
   (let* ((username (or frb-username (read-from-minibuffer "User: ")))
          (password (or frb-password (read-passwd "Password: ")))
-         (uri (frb-http/uri path))
+        (uri (frb-http/uri path))
          (url-request-method "POST")
          (qs (concat (format "auth_email=%s&auth_password=%s&client=emacs&"
                              username
                              (md5 password)) query-string))
          (url-request-data qs))
     (frb-auth/save-creds username password)
-    (url-retrieve uri 'frb-http/kill-buffer)))
+    (url-retrieve uri 'frb-http/post-status-)))
+
+(defun frb-http/post- (path username password)
+  (let* ((uri (frb-http/uri path))
+         (url-request-method "POST")
+         (qs (format "auth_email=%s&auth_password=%s&client=emacs&"
+                             username
+                             (md5 password)))
+         (url-request-data qs))
+    (url-retrieve uri 'frb-http/post-status-)))
 
 (defun frb-http/kill-buffer (status)
   (kill-buffer (current-buffer))
   (message "Added a faraday's note"))
 
-(defun frb-http/switch-buffer (status)
+(defun frb-http/debug-buffer (status)
+  (message (format "%s" status))
   (switch-to-buffer (current-buffer)))
+
+(defun frb-http/post-status (status)
+  (frb-util/kill-buffer "frb-notes")
+  (with-current-buffer (current-buffer)
+    (goto-line 10)
+    (let ((j (json-read-from-string
+               (buffer-substring-no-properties (point) (point-max)))))
+      (message (format "%s" j))))
+  (kill-buffer (current-buffer)))
+
+(defun frb-http/post-status- (status)
+  (frb-util/kill-buffer "frb-notes")
+  (with-current-buffer (current-buffer)
+    (goto-line 10)
+    (let ((j (buffer-substring-no-properties (point) (point-max))))
+      (message (format "%s" j))))
+  (kill-buffer (current-buffer)))
 
 (defun frb-http/get (path &optional query-string)
   (let* ((username (or frb-username (read-from-minibuffer "User: ")))
