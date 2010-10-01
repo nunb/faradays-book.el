@@ -68,6 +68,7 @@
 (defvar frb-stash)
 (defvar frb-tags-current)
 (defvar current-qs)
+(defvar current-point 0)
 
 ;; modes
 
@@ -220,6 +221,7 @@
 
 (defun frb-note-delete ()
   (interactive)
+  (setq current-point (point))
   (let ((id (frb-util/get-id)))
     (frb-http/post "note/delete"
                    (format "note_id=%s" id)))
@@ -233,6 +235,7 @@
 
 (defun frb-note-share ()
   (interactive)
+  (setq current-point (point))
   (let ((id (frb-util/get-id))
         (privacy "public"))
     (frb-http/post "note/set_privacy"
@@ -241,6 +244,7 @@
 
 (defun frb-note-unshare ()
   (interactive)
+  (setq current-point (point))
   (let ((id (frb-util/get-id))
         (privacy "private"))
     (frb-http/post "note/set_privacy"
@@ -402,7 +406,7 @@
       (frb-view/format-notes k)
       (setq buffer-read-only t)
       (set-buffer-modified-p nil)
-      (goto-line 1))))
+      (goto-char current-point))))
 
 (defun frb-view/opentags (frb-buffer)
   (frb-view/tags frb-buffer))
@@ -442,8 +446,8 @@
 (defun frb-view/show-help ()
   (interactive)
   (if (frb-util/publicp)
-      (message "help: Edit(e) Delete(d) Unshare(u) Quit(q)")
-    (message "help: Edit(e) Delete(d) Share(s) Quit(q)")))
+      (message "help: Delete(d) Unshare(u) Quit(q)")
+    (message "help: Delete(d) Share(s) Quit(q)")))
 
 (define-key frb-notes-mode-map "?" 'frb-view/show-help)
 (define-key frb-notes-mode-map "d" 'frb-note-delete)
