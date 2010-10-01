@@ -67,6 +67,7 @@
 
 (defvar frb-stash)
 (defvar frb-tags-current)
+(defvar current-qs)
 
 ;; modes
 
@@ -221,8 +222,9 @@
   (interactive)
   (let ((id (frb-util/get-id)))
     (frb-http/post "note/delete"
-                   (format "note_id=%s" id))))
-
+                   (format "note_id=%s" id)))
+  (frb-view/dispatcher "notes" (url-retrieve-synchronously current-qs)))
+  
 (defun frb-note-edit ()
   (interactive)
   (let ((id (frb-util/get-id)))
@@ -234,14 +236,16 @@
   (let ((id (frb-util/get-id))
         (privacy "public"))
     (frb-http/post "note/set_privacy"
-                   (format "note_id=%s&privacy=%s" id privacy))))
+                   (format "note_id=%s&privacy=%s" id privacy)))
+  (frb-view/dispatcher "notes" (url-retrieve-synchronously current-qs)))
 
 (defun frb-note-unshare ()
   (interactive)
   (let ((id (frb-util/get-id))
         (privacy "private"))
     (frb-http/post "note/set_privacy"
-                   (format "note_id=%s&privacy=%s" id privacy))))
+                   (format "note_id=%s&privacy=%s" id privacy)))
+  (frb-view/dispatcher "notes" (url-retrieve-synchronously current-qs)))
 
 ;; modules
 (defun frb-http/uri (path)
@@ -302,6 +306,7 @@
                                      username (md5 password)) query-string)
                (concat uri (format "?auth_email=%s&auth_password=%s&client=emacs"
                                    username (md5 password))))))
+    (setq current-qs qs)
     (frb-auth/save-creds username password)
     (frb-view/dispatcher path (url-retrieve-synchronously qs))))
 
