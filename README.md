@@ -48,8 +48,8 @@ Faradays-book emacs client has 4 components:
 and interactive view 
 * `?` shows help options
 * Edit a note (*TODO*) 
-* Delete a note (*TODO*)
-* Share a note (*TODO*)
+* Delete a note
+* Share/Unshare a note
 * Offline viewing  (*TODO*)
 
 ### TAGS MODE
