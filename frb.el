@@ -233,6 +233,7 @@
     (frb-http/post "note/edit"
                    (format "note_id=%s" id))))
 
+;; frb reloads
 (defun frb-note-share ()
   (interactive)
   (setq current-point (point))
@@ -249,6 +250,14 @@
         (privacy "private"))
     (frb-http/post "note/set_privacy"
                    (format "note_id=%s&privacy=%s" id privacy)))
+  (frb-view/dispatcher "notes" (url-retrieve-synchronously current-qs)))
+
+(defun frb-note-add ()
+  (interactive)
+  (frb-http/post "note/new"
+                 (format "body=%s&privacy=%s"
+                         (read-from-minibuffer "Note: ")
+                         "private"))
   (frb-view/dispatcher "notes" (url-retrieve-synchronously current-qs)))
 
 ;; modules
@@ -446,13 +455,14 @@
 (defun frb-view/show-help ()
   (interactive)
   (if (frb-util/publicp)
-      (message "help: Delete(d) Unshare(u) Quit(q)")
-    (message "help: Delete(d) Share(s) Quit(q)")))
+      (message "help: Add(a) Delete(d) Unshare(u) Quit(q)")
+    (message "help: Add(a) Delete(d) Share(s) Quit(q)")))
 
 (define-key frb-notes-mode-map "?" 'frb-view/show-help)
 (define-key frb-notes-mode-map "d" 'frb-note-delete)
 (define-key frb-notes-mode-map "s" 'frb-note-share)
 (define-key frb-notes-mode-map "u" 'frb-note-unshare)
+(define-key frb-notes-mode-map "a" 'frb-note-add)
 
 (defun frb-view/notes-at-point ()
   (interactive)
