@@ -195,9 +195,12 @@
 (defun frb-open-notes ()
   "Get the open notes for the given tag"
   (interactive)
-  (let ((tags (frb-data/open-tags-all)))
-    (frb-http/get "tag/openotes"
-                  (format "tag_name=%s" (completing-read "Tag: " tags)))))
+  (let* ((tags (frb-data/open-tags-all))
+         (tag (completing-read "Get notes containing tag: " tags)))
+    (if (not (string-equal tag ""))
+        (frb-http/open-get "tag/opennotes"
+                      (format "tag_name=%s" tag))
+      (frb-http/open-get "opennotes"))))
 
 (defun frb-notes-tag-debug ()
   "Get the notes for the given tag"
@@ -433,6 +436,9 @@
   (frb-view/notes frb-buffer))
 
 (defun frb-view/opennote (frb-buffer)
+  (frb-view/notes frb-buffer))
+
+(defun frb-view/opennotes (frb-buffer)
   (frb-view/notes frb-buffer))
 
 (defun frb-view/format-tags (x)
